@@ -7,6 +7,7 @@ module.exports.products = async function(req, res){
    if(!product){
      console.log("error in finding product");
    } else{
+     
      return res.status(200).json({
         success:true,
         message:"product fetched successfully",
@@ -85,30 +86,37 @@ module.exports.delete = async function(req,res){
 };
 
 // function to update a product's quantity
-module.exports.updateQunatity = function(req, res){
-    const ID = req.params.productID;
-    // find the product using id
-    Product.findById(ID, function(err, found){
-        if(err){
-            res.send(err);
-        }else{
+module.exports.updateQunatity = async function (req, res) {
+    try {
 
-            // Note - To increment the quantity of the product put number as a positive value in the query 
-            //        and to decrement the quantity put the number as negative value in the query
+        const ID = req.params.productID;
+        console.log(ID);
 
-            const newQty = parseInt(found.quantity) + parseInt(req.query.number);
-            // update the product's quantity
-            Product.findByIdAndUpdate(ID, {quantity: newQty}, function(err, updatedProduct){
-                if(err){
-                    res.send(err);
-                }else{
-                    updatedProduct.quantity = newQty;
-                    res.send({
-                        product: updatedProduct,
-                        message: 'updated successfully'
-                    });
-                }
-            });
+        // Find the product using id
+        const found = await Product.findById(ID).exec();
+        console.log(found);
+        if (!found) {
+            return res.status(404).send('Product not found');
         }
-    });
-}
+        console.log(found.quantity);
+        console.log(req.query.num);
+
+        const newQty = parseInt(found.quantity) + parseInt(req.query.num);
+        console.log(newQty);
+        // Update the product's quantity
+        const updatedProduct = await Product.findByIdAndUpdate(ID, { quantity: newQty }, { new: true }).exec();
+         console.log(updatedProduct);
+        if (!updatedProduct) {
+            return res.status(404).send('Product not found');
+        }
+
+        updatedProduct.quantity = newQty;
+
+        res.send({
+            product: updatedProduct,
+            message: 'Updated successfully'
+        });
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+};

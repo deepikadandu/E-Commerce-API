@@ -12,6 +12,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 
 // using routes
+// app.get('/',(req,res)=>{return res.send("postman")});
 app.use('/products', require('./routes/products'));
 
 //env file
