@@ -37,19 +37,52 @@ module.exports.create = async function(req, res){
 }
 
 // function to delete a product using it's ID
-module.exports.delete = function(req, res){
-    Product.deleteOne(
-        {_id: req.params.productID},
-        function(err){
-            if(err){
-                res.send(err);
-            }else{
-                res.send({
-                    message: "Product deleted"
-                });
-            }
+module.exports.delete = async function(req,res){
+    // console.log(req.params.id);
+    
+    try{
+        console.log(req.params);
+        //Extracting the id from the URL which are passed through params
+        const id = req.params.productID;
+        console.log(id);
+        // Fetching the product via its id
+        let product = await Product.findById(id);
+        console.log(product);
+        // If product is not found
+        if(!product){
+            
+            // Throws Error
+            return res.status(404).json({
+                message: "Product not found!!"
+            });
+        }
+        
+        // Deleting the particular product
+        let deleteProduct = await product.deleteOne();
+        
+        // on success shows the deleted product
+        return res.status(200).json({
+            data : {
+                product : {
+                    id : deleteProduct.id,
+                    name: req.body.name,
+                    quantity: req.body.quantity
+                }
+            },
+            message : "Product deleted successfully"
         });
-}
+        
+    }catch(err){
+        
+        // To view error
+        console.log("****",err);
+        
+        //Throws error on failure
+        return res.status(500).json({
+            message : "Error in deleting product"
+        });
+    }
+};
 
 // function to update a product's quantity
 module.exports.updateQunatity = function(req, res){
