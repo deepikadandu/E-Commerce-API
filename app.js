@@ -15,10 +15,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use('/products', require('./routes/products'));
 
 //env file
-require("dotenv").config();
-console.log(process.env.WEATHER_API_KEY);
+// require("dotenv").config();
+// console.log(process.env.WEATHER_API_KEY);
 
 // starting the server
 app.listen(port, function(){
-    console.log('API is live on http://localhost:8081/products');
+    console.log('API is live on http://localhost:8081');
 });

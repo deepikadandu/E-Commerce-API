@@ -3,6 +3,7 @@ const Product = require('../models/product');
 // function to show all the products
 module.exports.products = async function(req, res){
    const product=await Product.find({});
+   console.log("product",product);
    if(!product){
      console.log("error in finding product");
    } else{
